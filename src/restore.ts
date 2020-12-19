@@ -36,7 +36,9 @@ async function run(): Promise<void> {
         const primaryKey = core.getInput(Inputs.Key, { required: true });
         core.saveState(State.CachePrimaryKey, primaryKey);
 
-        let exitCode = await exec("gsutil", ["stat", primaryKey]);
+        let exitCode = await exec("gsutil", ["stat", primaryKey], {
+            failOnStdErr: false
+        });
         if (exitCode === 1) {
             return core.setFailed("Cache does not exist!");
         }

@@ -1779,7 +1779,9 @@ function run() {
             });
             const primaryKey = core.getInput(constants_1.Inputs.Key, { required: true });
             core.saveState(constants_1.State.CachePrimaryKey, primaryKey);
-            let exitCode = yield exec_1.exec("gsutil", ["stat", primaryKey]);
+            let exitCode = yield exec_1.exec("gsutil", ["stat", primaryKey], {
+                failOnStdErr: false
+            });
             if (exitCode === 1) {
                 return core.setFailed("Cache does not exist!");
             }

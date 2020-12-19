@@ -1783,7 +1783,7 @@ function run() {
                 failOnStdErr: false
             });
             if (exitCode === 1) {
-                return core.setFailed("Cache does not exist!");
+                return console.log("Cache not found!");
             }
             const workspace = (_a = process.env["GITHUB_WORKSPACE"]) !== null && _a !== void 0 ? _a : process.cwd();
             exitCode = yield exec_1.exec("/bin/bash", [

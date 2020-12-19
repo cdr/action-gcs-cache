@@ -40,7 +40,7 @@ async function run(): Promise<void> {
             failOnStdErr: false
         });
         if (exitCode === 1) {
-            return core.setFailed("Cache does not exist!");
+            return console.log("Cache not found!");
         }
 
         const workspace = process.env["GITHUB_WORKSPACE"] ?? process.cwd();

@@ -1778,19 +1778,31 @@ function run() {
                 input: Buffer.from(serviceAccount)
             });
             const primaryKey = core.getInput(constants_1.Inputs.Key, { required: true });
-            core.saveState(constants_1.State.CachePrimaryKey, primaryKey);
+            let cacheKey = `${primaryKey}-${core.getInput("GITHUB_REF")}`;
+            // We save the state here... we never wanna overwrite the
+            // master cache unless we're on master.
+            core.saveState(constants_1.State.CachePrimaryKey, cacheKey);
             try {
-                yield exec_1.exec("gsutil", ["stat", primaryKey], {
+                yield exec_1.exec("gsutil", ["stat", cacheKey], {
                     failOnStdErr: false
                 });
             }
             catch (ex) {
-                return console.log("Cache not found!");
+                // We try to reference the master cache if it exists.
+                cacheKey = `${primaryKey}-refs/heads/master`;
+                try {
+                    yield exec_1.exec("gsutil", ["stat", cacheKey], {
+                        failOnStdErr: false
+                    });
+                }
+                catch (ex) {
+                    return console.log("Cache not found!");
+                }
             }
             const workspace = (_a = process.env["GITHUB_WORKSPACE"]) !== null && _a !== void 0 ? _a : process.cwd();
             const exitCode = yield exec_1.exec("/bin/bash", [
                 "-c",
-                `gsutil -o 'GSUtil:parallel_thread_count=1' -o 'GSUtil:sliced_object_download_max_components=8' cp "${primaryKey}" - | tar -x -P -C "${workspace}"`
+                `gsutil -o 'GSUtil:parallel_thread_count=1' -o 'GSUtil:sliced_object_download_max_components=8' cp "${cacheKey}" - | tar -x -P -C "${workspace}"`
             ]);
             if (exitCode === 1) {
                 console.log("[warning]Failed to extract cache...");

@@ -1,4 +1,3 @@
-import * as cache from "@actions/cache";
 import * as cacheUtils from "@actions/cache/lib/internal/cacheUtils";
 import * as core from "@actions/core";
 import { exec } from "@actions/exec";

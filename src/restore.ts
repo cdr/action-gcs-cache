@@ -36,15 +36,16 @@ async function run(): Promise<void> {
         const primaryKey = core.getInput(Inputs.Key, { required: true });
         core.saveState(State.CachePrimaryKey, primaryKey);
 
-        let exitCode = await exec("gsutil", ["stat", primaryKey], {
-            failOnStdErr: false
-        });
-        if (exitCode === 1) {
+        try {
+            await exec("gsutil", ["stat", primaryKey], {
+                failOnStdErr: false
+            });
+        } catch (ex) {
             return console.log("Cache not found!");
         }
 
         const workspace = process.env["GITHUB_WORKSPACE"] ?? process.cwd();
-        exitCode = await exec("/bin/bash", [
+        const exitCode = await exec("/bin/bash", [
             "-c",
             `gsutil -o 'GSUtil:parallel_thread_count=1' -o 'GSUtil:sliced_object_download_max_components=8' cp "${primaryKey}" - | tar -x -P -C "${workspace}"`
         ]);

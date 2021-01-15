@@ -1779,14 +1779,16 @@ function run() {
             });
             const primaryKey = core.getInput(constants_1.Inputs.Key, { required: true });
             core.saveState(constants_1.State.CachePrimaryKey, primaryKey);
-            let exitCode = yield exec_1.exec("gsutil", ["stat", primaryKey], {
-                failOnStdErr: false
-            });
-            if (exitCode === 1) {
+            try {
+                yield exec_1.exec("gsutil", ["stat", primaryKey], {
+                    failOnStdErr: false
+                });
+            }
+            catch (ex) {
                 return console.log("Cache not found!");
             }
             const workspace = (_a = process.env["GITHUB_WORKSPACE"]) !== null && _a !== void 0 ? _a : process.cwd();
-            exitCode = yield exec_1.exec("/bin/bash", [
+            const exitCode = yield exec_1.exec("/bin/bash", [
                 "-c",
                 `gsutil -o 'GSUtil:parallel_thread_count=1' -o 'GSUtil:sliced_object_download_max_components=8' cp "${primaryKey}" - | tar -x -P -C "${workspace}"`
             ]);

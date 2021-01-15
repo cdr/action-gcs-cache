@@ -1778,7 +1778,7 @@ function run() {
                 input: Buffer.from(serviceAccount)
             });
             const primaryKey = core.getInput(constants_1.Inputs.Key, { required: true });
-            let cacheKey = `${primaryKey}-${core.getInput("GITHUB_REF")}`;
+            let cacheKey = `${primaryKey}-${process.env.GITHUB_REF}`;
             // We save the state here... we never wanna overwrite the
             // master cache unless we're on master.
             core.saveState(constants_1.State.CachePrimaryKey, cacheKey);

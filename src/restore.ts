@@ -34,7 +34,7 @@ async function run(): Promise<void> {
         );
 
         const primaryKey = core.getInput(Inputs.Key, { required: true });
-        let cacheKey = `${primaryKey}-${core.getInput("GITHUB_REF")}`;
+        let cacheKey = `${primaryKey}-${process.env.GITHUB_REF}`;
         // We save the state here... we never wanna overwrite the
         // master cache unless we're on master.
         core.saveState(State.CachePrimaryKey, cacheKey);

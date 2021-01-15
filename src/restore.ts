@@ -59,7 +59,7 @@ async function run(): Promise<void> {
         const workspace = process.env["GITHUB_WORKSPACE"] ?? process.cwd();
         const exitCode = await exec("/bin/bash", [
             "-c",
-            `gsutil -o 'GSUtil:parallel_thread_count=1' -o 'GSUtil:sliced_object_download_max_components=8' cp "${cacheKey}" - | tar -x -P -C "${workspace}"`
+            `gsutil -o 'GSUtil:parallel_thread_count=1' -o 'GSUtil:sliced_object_download_max_components=8' cp "${cacheKey}" - | tar --skip-old-files -x -P -C "${workspace}"`
         ]);
         if (exitCode === 1) {
             console.log("[warning]Failed to extract cache...");
